@@ -44,6 +44,8 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
 	__webpack_require__(1);
 
 	document.write(__webpack_require__(5));
@@ -83,7 +85,7 @@
 
 
 	// module
-	exports.push([module.id, "body {\r\n    background: blue;\r\n}", ""]);
+	exports.push([module.id, "", ""]);
 
 	// exports
 
@@ -398,104 +400,214 @@
 
 /***/ },
 /* 5 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	var Component = React.createClass({
-	  displayName: 'Component',
+	'use strict';
 
-	  componentDidMount: function () {
-	    this.loadDataFromServer();
+	var _converter = __webpack_require__(7);
+
+	var _converter2 = _interopRequireDefault(_converter);
+
+	var _checker = __webpack_require__(9);
+
+	var _checker2 = _interopRequireDefault(_checker);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var converter = '';
+	var checker = '';
+	var CurrencyCoverter = React.createClass({
+	  displayName: 'CurrencyCoverter',
+
+	  getInitialState: function getInitialState() {
+	    return {
+	      input: '',
+	      output: ''
+	    };
 	  },
-	  loadDataFromServer: function () {
-	    $.ajax({
-	      url: this.props.url,
-	      success: function (data) {
-	        console.log('data', data);
-	      },
-	      error: function (data) {
-	        console.log('data', data);
-	      }
-	    });
+	  componentDidMount: function componentDidMount() {
+	    converter = new _converter2.default();
+	    checker = new _checker2.default();
 	  },
-	  render: function () {
+	  handleInputChange: function handleInputChange(e) {
+	    var value = e.target.value;
+	    this.setState({ input: value });
+	    if (checker.checkValue(value)) {
+	      converter.convert(value);
+	    } else {
+	      console.log('wrong number');
+	    }
+	  },
+	  render: function render() {
 	    return React.createElement(
 	      'div',
 	      { 'class': 'container' },
-	      React.createElement(TripForm, null)
-	    );
-	  }
-	});
-
-	var TripForm = React.createClass({
-	  displayName: 'TripForm',
-
-	  getInitialState: function () {
-	    return {
-	      startPoint: '',
-	      destination: '',
-	      startDate: '',
-	      endDate: ''
-	    };
-	  },
-	  handleSubmit: function (e) {
-	    e.preventDefault();
-	    console.log('form has submit');
-	    console.log(this.state.startPoint, this.state.destination);
-	  },
-	  setStartPoint: function (value) {
-	    this.state.startPoint = value;
-	  },
-	  setDestination: function (value) {
-	    this.state.destination = value;
-	  },
-	  setStartDate: function (value) {
-	    this.state.startDate = value;
-	  },
-	  setEndDate: function (value) {
-	    this.state.endDate = value;
-	  },
-	  render: function () {
-	    return React.createElement(
-	      'div',
-	      { className: 'formContainer container-fluid' },
 	      React.createElement(
-	        'form',
-	        { className: 'newTrip', onSubmit: this.handleSubmit },
-	        React.createElement(InputBox, { content: 'Start　Point:　', setValue: this.setStartPoint }),
-	        React.createElement(InputBox, { content: 'Destination:　', setValue: this.setDestination }),
-	        React.createElement(InputBox, { content: 'Start Date:　', setValue: this.setStartDate }),
-	        React.createElement(InputBox, { content: 'End Date: ', setValue: this.setEndDate }),
+	        'div',
+	        { 'class': 'inputPanel' },
+	        React.createElement(
+	          'span',
+	          null,
+	          'Input'
+	        ),
+	        React.createElement('input', {
+	          type: 'text',
+	          placeholder: 'Input',
+	          value: this.state.input,
+	          onChange: this.handleInputChange
+	        })
+	      ),
+	      React.createElement(
+	        'div',
+	        { 'class': 'outputPanel' },
+	        React.createElement(
+	          'span',
+	          null,
+	          'Output'
+	        ),
+	        React.createElement('input', { type: 'text', id: 'output' })
+	      ),
+	      React.createElement(
+	        'div',
+	        null,
 	        React.createElement(
 	          'button',
-	          { type: 'submit', className: 'row col-md-offset-2' },
-	          'Submit'
+	          null,
+	          'Reset'
 	        )
 	      )
 	    );
 	  }
 	});
 
-	var InputBox = React.createClass({
-	  displayName: 'InputBox',
+	ReactDOM.render(React.createElement(CurrencyCoverter, null), document.getElementById('content'));
 
-	  handleChange: function (e) {
-	    this.props.setValue(e.target.value);
-	  },
-	  render: function () {
-	    return React.createElement(
-	      'div',
-	      { className: 'row col-md-offset-2' },
-	      React.createElement(
-	        'label',
-	        { className: '' },
-	        this.props.content,
-	        React.createElement('input', { className: 'text', onChange: this.handleChange })
-	      )
-	    );
+/***/ },
+/* 6 */,
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(8);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var ROE = 10;
+
+	var Converter = function (_Component) {
+	  _inherits(Converter, _Component);
+
+	  function Converter(props, context) {
+	    _classCallCheck(this, Converter);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Converter).call(this, props, context));
 	  }
+
+	  _createClass(Converter, [{
+	    key: 'checkValue',
+	    value: function checkValue(value) {}
+	  }, {
+	    key: 'convert',
+	    value: function convert(value) {
+	      console.log('haha');
+	    }
+	  }]);
+
+	  return Converter;
+	}(_react.Component);
+
+	module.exports = Converter;
+
+/***/ },
+/* 8 */
+/***/ function(module, exports) {
+
+	module.exports = React;
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
 	});
 
-	ReactDOM.render(React.createElement(Component, { url: 'http://localhost:3000/trip/haha' }), document.getElementById('content'));
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(8);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Checker = function (_Component) {
+	  _inherits(Checker, _Component);
+
+	  function Checker(props, context) {
+	    _classCallCheck(this, Checker);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Checker).call(this, props, context));
+
+	    _this.checkValue = _this.checkValue.bind(_this);
+	    return _this;
+	  }
+
+	  _createClass(Checker, [{
+	    key: 'checkValue',
+	    value: function checkValue(value) {
+	      console.log('value', value);
+	      var num = this.toNumber(value);
+	      if (this.isSafeInteger(num) && this.isPositive(num)) {
+	        return true;
+	      } else {
+	        return false;
+	      }
+	    }
+	  }, {
+	    key: 'toNumber',
+	    value: function toNumber(value) {
+	      return Number(value);
+	    }
+	  }, {
+	    key: 'isFinite',
+	    value: function isFinite(value) {
+	      return Number.isFinite(value);
+	    }
+	  }, {
+	    key: 'isSafeInteger',
+	    value: function isSafeInteger(value) {
+	      return Number.isSafeInteger(value);
+	    }
+	  }, {
+	    key: 'isPositive',
+	    value: function isPositive(value) {
+	      return value > 0;
+	    }
+	  }]);
+
+	  return Checker;
+	}(_react.Component);
+
+	exports.default = Checker;
 
 /***/ }
 /******/ ]);

@@ -1,15 +1,18 @@
-import { Converter } from './converter.js';
+import Converter from './converter.js';
+// import React, { Component } from 'react';
+
 
 class UsdConverter extends Converter{
-  constructor(){
-
+  constructor(value){
+    super(value);
+    console.log('Converter value',value);
   }
   checkValue(value){
 
   }
   convert(value){
-
+    console.log('hahahaaaaa');
   }
 }
 
-export default UsdConverter;
+module.exports = Converter;
