@@ -5,7 +5,7 @@ class Checker extends Component{
     super(props, context);
     this.checkValue = this.checkValue.bind(this);
   }
-  checkValue(value){
+  checkValue(value = 0){
     let num = this.toNumber(value);
     if(this.isSafeInteger(num) &&
       this.isPositive(num)
@@ -18,9 +18,9 @@ class Checker extends Component{
   toNumber(value){
     return Number(value);
   }
-  isFinite(value){
-    return Number.isFinite(value);
-  }
+  // isFinite(value){
+  //   return Number.isFinite(value);
+  // }
   isSafeInteger(value){
     return Number.isSafeInteger(value);
   }
@@ -29,4 +29,4 @@ class Checker extends Component{
   }
 }
 
-export default Checker;
+module.exports = Checker;
