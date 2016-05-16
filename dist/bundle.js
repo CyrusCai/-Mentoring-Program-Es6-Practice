@@ -48,7 +48,8 @@
 
 	__webpack_require__(1);
 
-	document.write(__webpack_require__(5));
+	// document.write(require('./public/components/CurrencyConverter.js'));
+	document.write(__webpack_require__(9));
 
 /***/ },
 /* 1 */
@@ -404,11 +405,11 @@
 
 	'use strict';
 
-	var _converter = __webpack_require__(7);
+	var _converter = __webpack_require__(6);
 
 	var _converter2 = _interopRequireDefault(_converter);
 
-	var _checker = __webpack_require__(9);
+	var _checker = __webpack_require__(8);
 
 	var _checker2 = _interopRequireDefault(_checker);
 
@@ -416,63 +417,107 @@
 
 	var converter = '';
 	var checker = '';
+	var url = 'http://api.fixer.io/latest?base=CNY&symbols=HKD';
 	var CurrencyCoverter = React.createClass({
 	  displayName: 'CurrencyCoverter',
 
 	  getInitialState: function getInitialState() {
 	    return {
 	      input: '',
-	      output: ''
+	      output: '',
+	      rate: ''
 	    };
 	  },
 	  componentDidMount: function componentDidMount() {
 	    converter = new _converter2.default();
 	    checker = new _checker2.default();
+	    this.getRateFromAPI();
 	  },
 	  handleInputChange: function handleInputChange(e) {
 	    var value = e.target.value;
 	    this.setState({ input: value });
 	    if (checker.checkValue(value)) {
-	      converter.convert(value);
+	      var moneyAfterConvert = converter.convert(value, this.state.rate);
+	      this.setState({ output: moneyAfterConvert });
 	    } else {
 	      console.log('wrong number');
 	    }
 	  },
+	  getRateFromAPI: function getRateFromAPI() {
+	    $.ajax({
+	      url: url,
+	      dataType: 'json',
+	      cache: false,
+	      success: function (data) {
+	        this.setState({ rate: Number(data.rates.HKD) });
+	        console.log('rate', this.state.rate);
+	      }.bind(this),
+	      error: function (data) {
+	        console.log('error get data', data);
+	      }.bind(this)
+	    });
+	  },
+	  handleButtonClick: function handleButtonClick() {
+	    this.setState({
+	      input: '',
+	      output: ''
+	    });
+	  },
+
 	  render: function render() {
 	    return React.createElement(
 	      'div',
-	      { 'class': 'container' },
+	      { className: 'container' },
 	      React.createElement(
 	        'div',
-	        { 'class': 'inputPanel' },
+	        { className: 'row input-group col-md-6' },
+	        React.createElement(
+	          'label',
+	          { className: 'tab' },
+	          'From'
+	        ),
 	        React.createElement(
 	          'span',
-	          null,
-	          'Input'
+	          { className: 'input-group-addon' },
+	          '￥'
 	        ),
 	        React.createElement('input', {
 	          type: 'text',
-	          placeholder: 'Input',
+	          placeholder: 'CNY',
 	          value: this.state.input,
-	          onChange: this.handleInputChange
+	          onChange: this.handleInputChange,
+	          className: 'form-control col-md-1'
 	        })
 	      ),
 	      React.createElement(
 	        'div',
-	        { 'class': 'outputPanel' },
+	        { className: 'row input-group  col-md-6' },
+	        React.createElement(
+	          'label',
+	          { className: 'tab' },
+	          'To'
+	        ),
 	        React.createElement(
 	          'span',
-	          null,
-	          'Output'
+	          { className: 'input-group-addon' },
+	          '$'
 	        ),
-	        React.createElement('input', { type: 'text', id: 'output' })
+	        React.createElement('input', {
+	          type: 'text',
+	          placeholder: 'HKD',
+	          value: this.state.output,
+	          className: 'form-control  col-md-1'
+	        })
 	      ),
 	      React.createElement(
 	        'div',
-	        null,
+	        { className: 'input-group col-md-6 col-md-offset-2' },
 	        React.createElement(
 	          'button',
-	          null,
+	          {
+	            className: 'btn btn-primary btn-lg',
+	            onClick: this.handleButtonClick
+	          },
 	          'Reset'
 	        )
 	      )
@@ -480,18 +525,17 @@
 	  }
 	});
 
-	ReactDOM.render(React.createElement(CurrencyCoverter, null), document.getElementById('content'));
+	module.exports = CurrencyCoverter;
 
 /***/ },
-/* 6 */,
-/* 7 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _react = __webpack_require__(8);
+	var _react = __webpack_require__(7);
 
 	var _react2 = _interopRequireDefault(_react);
 
@@ -503,8 +547,6 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var ROE = 10;
-
 	var Converter = function (_Component) {
 	  _inherits(Converter, _Component);
 
@@ -515,12 +557,9 @@
 	  }
 
 	  _createClass(Converter, [{
-	    key: 'checkValue',
-	    value: function checkValue(value) {}
-	  }, {
 	    key: 'convert',
-	    value: function convert(value) {
-	      console.log('haha');
+	    value: function convert(value, rate) {
+	      return value * rate;
 	    }
 	  }]);
 
@@ -530,13 +569,13 @@
 	module.exports = Converter;
 
 /***/ },
-/* 8 */
+/* 7 */
 /***/ function(module, exports) {
 
 	module.exports = React;
 
 /***/ },
-/* 9 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -547,7 +586,7 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _react = __webpack_require__(8);
+	var _react = __webpack_require__(7);
 
 	var _react2 = _interopRequireDefault(_react);
 
@@ -574,7 +613,6 @@
 	  _createClass(Checker, [{
 	    key: 'checkValue',
 	    value: function checkValue(value) {
-	      console.log('value', value);
 	      var num = this.toNumber(value);
 	      if (this.isSafeInteger(num) && this.isPositive(num)) {
 	        return true;
@@ -608,6 +646,203 @@
 	}(_react.Component);
 
 	exports.default = Checker;
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _Header = __webpack_require__(10);
+
+	var _Header2 = _interopRequireDefault(_Header);
+
+	var _Footer = __webpack_require__(11);
+
+	var _Footer2 = _interopRequireDefault(_Footer);
+
+	var _CurrencyConverter = __webpack_require__(5);
+
+	var _CurrencyConverter2 = _interopRequireDefault(_CurrencyConverter);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var Container = React.createClass({
+	  displayName: 'Container',
+
+	  render: function render() {
+	    return React.createElement(
+	      'div',
+	      null,
+	      React.createElement(_Header2.default, null),
+	      React.createElement(
+	        'div',
+	        null,
+	        React.createElement(
+	          'section',
+	          null,
+	          React.createElement(
+	            'div',
+	            { className: 'container input-group ' },
+	            React.createElement(
+	              'div',
+	              { className: 'row ' },
+	              React.createElement(
+	                'div',
+	                { className: 'col-md-12' },
+	                React.createElement(
+	                  'h1',
+	                  { className: 'section-heading' },
+	                  'Simple Currency Converter'
+	                ),
+	                React.createElement(
+	                  'p',
+	                  { className: 'lead section-lead' },
+	                  'This is a very simple currency converter based on react js.'
+	                )
+	              )
+	            )
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'container' },
+	            React.createElement(
+	              'div',
+	              { className: 'row' },
+	              React.createElement(
+	                'div',
+	                { className: 'col-md-12' },
+	                React.createElement(_CurrencyConverter2.default, null)
+	              )
+	            )
+	          )
+	        )
+	      ),
+	      React.createElement(_Footer2.default, null)
+	    );
+	  }
+	});
+
+	ReactDOM.render(React.createElement(Container, null), document.getElementById('content'));
+
+/***/ },
+/* 10 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var Header = React.createClass({
+	    displayName: "Header",
+
+	    render: function render() {
+	        return React.createElement(
+	            "nav",
+	            { className: "navbar navbar-inverse navbar-fixed-top", role: "navigation" },
+	            React.createElement(
+	                "div",
+	                { className: "container" },
+	                React.createElement(
+	                    "div",
+	                    { className: "navbar-header" },
+	                    React.createElement(
+	                        "button",
+	                        { type: "button", className: "navbar-toggle", "data-toggle": "collapse", "data-target": "#bs-example-navbar-collapse-1" },
+	                        React.createElement(
+	                            "span",
+	                            { className: "sr-only" },
+	                            "Toggle navigation"
+	                        ),
+	                        React.createElement("span", { className: "icon-bar" }),
+	                        React.createElement("span", { className: "icon-bar" }),
+	                        React.createElement("span", { className: "icon-bar" })
+	                    ),
+	                    React.createElement(
+	                        "a",
+	                        { className: "navbar-brand", href: "#" },
+	                        "Currency Converter"
+	                    )
+	                ),
+	                React.createElement(
+	                    "div",
+	                    { className: "collapse navbar-collapse", id: "bs-example-navbar-collapse-1" },
+	                    React.createElement(
+	                        "ul",
+	                        { className: "nav navbar-nav" },
+	                        React.createElement(
+	                            "li",
+	                            null,
+	                            React.createElement(
+	                                "a",
+	                                { href: "#" },
+	                                "About"
+	                            )
+	                        ),
+	                        React.createElement(
+	                            "li",
+	                            null,
+	                            React.createElement(
+	                                "a",
+	                                { href: "#" },
+	                                "Services"
+	                            )
+	                        ),
+	                        React.createElement(
+	                            "li",
+	                            null,
+	                            React.createElement(
+	                                "a",
+	                                { href: "#" },
+	                                "Contact"
+	                            )
+	                        )
+	                    )
+	                )
+	            )
+	        );
+	    }
+	});
+
+	// module.exports = Header;
+	exports.default = Header;
+
+/***/ },
+/* 11 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	var Footer = React.createClass({
+	    displayName: "Footer",
+
+	    render: function render() {
+	        return React.createElement(
+	            "footer",
+	            null,
+	            React.createElement(
+	                "div",
+	                { className: "container" },
+	                React.createElement(
+	                    "div",
+	                    { className: "row" },
+	                    React.createElement(
+	                        "div",
+	                        { className: "col-lg-12" },
+	                        React.createElement(
+	                            "p",
+	                            null,
+	                            "Copyright © Your Website 2014"
+	                        )
+	                    )
+	                )
+	            )
+	        );
+	    }
+	});
+
+	module.exports = Footer;
 
 /***/ }
 /******/ ]);

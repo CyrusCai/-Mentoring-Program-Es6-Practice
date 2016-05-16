@@ -1,52 +1,85 @@
 import Converter from '../scripts/converter.js';
 import Checker from '../scripts/checker.js';
+
 let converter = '';
 let checker = '';
+const url = 'http://api.fixer.io/latest?base=CNY&symbols=HKD';
 var CurrencyCoverter = React.createClass({
   getInitialState : function(){
     return {
       input: '' ,
-      output: ''
+      output: '',
+      rate: ''
     }
   },
   componentDidMount : function(){
     converter = new Converter();
     checker = new Checker();
+    this.getRateFromAPI();
   },
   handleInputChange : function(e){
     let value = e.target.value;
     this.setState({input: value});
     if(checker.checkValue(value)){
-      converter.convert(value);
+      let moneyAfterConvert = converter.convert(value,this.state.rate);
+      this.setState({ output: moneyAfterConvert});
     }else{
       console.log('wrong number');
     }
   },
+  getRateFromAPI(){
+    $.ajax({
+      url: url,
+      dataType: 'json',
+      cache: false,
+      success:function(data){
+        this.setState({rate:Number(data.rates.HKD)});
+        console.log('rate',this.state.rate);
+      }.bind(this),
+      error:function(data){
+        console.log('error get data',data);
+      }.bind(this)
+    });
+  },
+  handleButtonClick(){
+    this.setState({
+      input:'',
+      output:''
+    });
+  },
   render : function(){
     return (
-      <div class="container">
-        <div class="inputPanel">
-          <span>Input</span>
+      <div className="container">
+        <div className="row input-group col-md-6">
+          <label className="tab">From</label>
+          <span className="input-group-addon">￥</span>
           <input
             type = "text"
-            placeholder = "Input"
+            placeholder = "CNY"
             value={this.state.input}
             onChange={this.handleInputChange}
+            className ="form-control col-md-1"
           />
         </div>
-        <div class="outputPanel">
-          <span>Output</span>
-          <input type="text" id="output" />
+        <div className="row input-group  col-md-6">
+          <label className="tab">To</label>
+          <span className="input-group-addon">$</span>
+          <input
+            type = "text"
+            placeholder = "HKD"
+            value={this.state.output}
+            className ="form-control  col-md-1"
+          />
         </div>
-        <div>
-          <button>Reset</button>
+        <div className="input-group col-md-6 col-md-offset-2">
+          <button
+          className="btn btn-primary btn-lg"
+          onClick = {this.handleButtonClick}
+          >Reset</button>
         </div>
       </div>
     )
   },
 });
 
-ReactDOM.render(
-  <CurrencyCoverter />,
-  document.getElementById('content')
-);
+module.exports = CurrencyCoverter;

@@ -6,7 +6,6 @@ class Checker extends Component{
     this.checkValue = this.checkValue.bind(this);
   }
   checkValue(value){
-    console.log('value',value);
     let num = this.toNumber(value);
     if(this.isSafeInteger(num) &&
       this.isPositive(num)
