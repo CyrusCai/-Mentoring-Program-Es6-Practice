@@ -4,43 +4,58 @@ import InputGroup from './InputGroup.js';
 
 let converter = '';
 let checker = '';
-const url = 'http://api.fixer.io/latest?base=CNY&symbols=HKD';
+const url_old = 'http://api.fixer.io/latest?base=CNY&symbols=HKD';
+const url = 'http://api.fixer.io/latest?'
 var CurrencyCoverter = React.createClass({
   getInitialState : function(){
     return {
       input: '' ,
       output: '',
-      rate: ''
+      rate: '',
+      fromCurrency : 'USD',
+      toCurrency : 'USD'
     }
   },
   componentDidMount : function(){
     converter = new Converter();
     checker = new Checker();
-    this.getRateFromAPI();
   },
   handleInputChange : function(value){
     this.setState({input: value});
     if(checker.checkValue(value)){
       let moneyAfterConvert = converter.convert(value,this.state.rate);
       this.setState({ output: moneyAfterConvert});
-      console.log('output',this.state.output);
     }else{
       console.log('wrong number');
     }
   },
   getRateFromAPI(){
+    console.log('url',url+"base="+this.state.fromCurrency+"&symbols="+this.state.toCurrency);
     $.ajax({
-      url: url,
+      url: url+"base="+this.state.fromCurrency+"&symbols="+this.state.toCurrency,
       dataType: 'json',
       cache: false,
       success:function(data){
         this.setState({rate:Number(data.rates.HKD)});
-        console.log('rate',this.state.rate);
       }.bind(this),
       error:function(data){
         console.log('error get data',data);
       }.bind(this)
     });
+  },
+  setFromCurrency(value){
+    let successCallback = function(){
+      console.log('to currency set', this.state.toCurrency);
+      this.getRateFromAPI();
+    }
+    this.setState({fromCurrency: value},successCallback);
+    this.getRateFromAPI();
+  },
+  setToCurrency(value){
+    let successCallback = function(){
+      this.getRateFromAPI();
+    }
+    this.setState({toCurrency : value},successCallback);
   },
   handleButtonClick(){
     this.setState({
@@ -51,8 +66,19 @@ var CurrencyCoverter = React.createClass({
   render : function(){
     return (
       <div className="container">
-        <InputGroup title='FROM' value={this.state.input} setValue={this.handleInputChange}/>
-        <InputGroup title='TO' value={this.state.output}/>
+        <InputGroup
+          title='From'
+          value={this.state.input}
+          currency = {this.state.fromCurrency}
+          setValue={this.handleInputChange}
+          setCurrency = {this.setFromCurrency}
+        />
+        <InputGroup
+          title='To'
+          currency = {this.state.toCurrency}
+          value={this.state.output}
+          setCurrency = {this.setToCurrency}
+          />
         <div className="input-group col-md-6 col-md-offset-2">
           <button
             className="btn btn-primary btn-lg"

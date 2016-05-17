@@ -625,7 +625,7 @@
 
 	var _checker2 = _interopRequireDefault(_checker);
 
-	var _InputGroup = __webpack_require__(14);
+	var _InputGroup = __webpack_require__(13);
 
 	var _InputGroup2 = _interopRequireDefault(_InputGroup);
 
@@ -633,7 +633,8 @@
 
 	var converter = '';
 	var checker = '';
-	var url = 'http://api.fixer.io/latest?base=CNY&symbols=HKD';
+	var url_old = 'http://api.fixer.io/latest?base=CNY&symbols=HKD';
+	var url = 'http://api.fixer.io/latest?';
 	var CurrencyCoverter = React.createClass({
 	  displayName: 'CurrencyCoverter',
 
@@ -641,37 +642,51 @@
 	    return {
 	      input: '',
 	      output: '',
-	      rate: ''
+	      rate: '',
+	      fromCurrency: 'USD',
+	      toCurrency: 'USD'
 	    };
 	  },
 	  componentDidMount: function componentDidMount() {
 	    converter = new _converter2.default();
 	    checker = new _checker2.default();
-	    this.getRateFromAPI();
 	  },
 	  handleInputChange: function handleInputChange(value) {
 	    this.setState({ input: value });
 	    if (checker.checkValue(value)) {
 	      var moneyAfterConvert = converter.convert(value, this.state.rate);
 	      this.setState({ output: moneyAfterConvert });
-	      console.log('output', this.state.output);
 	    } else {
 	      console.log('wrong number');
 	    }
 	  },
 	  getRateFromAPI: function getRateFromAPI() {
+	    console.log('url', url + "base=" + this.state.fromCurrency + "&symbols=" + this.state.toCurrency);
 	    $.ajax({
-	      url: url,
+	      url: url + "base=" + this.state.fromCurrency + "&symbols=" + this.state.toCurrency,
 	      dataType: 'json',
 	      cache: false,
 	      success: function (data) {
 	        this.setState({ rate: Number(data.rates.HKD) });
-	        console.log('rate', this.state.rate);
 	      }.bind(this),
 	      error: function (data) {
 	        console.log('error get data', data);
 	      }.bind(this)
 	    });
+	  },
+	  setFromCurrency: function setFromCurrency(value) {
+	    var successCallback = function successCallback() {
+	      console.log('to currency set', this.state.toCurrency);
+	      this.getRateFromAPI();
+	    };
+	    this.setState({ fromCurrency: value }, successCallback);
+	    this.getRateFromAPI();
+	  },
+	  setToCurrency: function setToCurrency(value) {
+	    var successCallback = function successCallback() {
+	      this.getRateFromAPI();
+	    };
+	    this.setState({ toCurrency: value }, successCallback);
 	  },
 	  handleButtonClick: function handleButtonClick() {
 	    this.setState({
@@ -684,8 +699,19 @@
 	    return React.createElement(
 	      'div',
 	      { className: 'container' },
-	      React.createElement(_InputGroup2.default, { title: 'FROM', value: this.state.input, setValue: this.handleInputChange }),
-	      React.createElement(_InputGroup2.default, { title: 'TO', value: this.state.output }),
+	      React.createElement(_InputGroup2.default, {
+	        title: 'From',
+	        value: this.state.input,
+	        currency: this.state.fromCurrency,
+	        setValue: this.handleInputChange,
+	        setCurrency: this.setFromCurrency
+	      }),
+	      React.createElement(_InputGroup2.default, {
+	        title: 'To',
+	        currency: this.state.toCurrency,
+	        value: this.state.output,
+	        setCurrency: this.setToCurrency
+	      }),
 	      React.createElement(
 	        'div',
 	        { className: 'input-group col-md-6 col-md-offset-2' },
@@ -826,91 +852,93 @@
 
 /***/ },
 /* 13 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
-	var CurrencySelect = React.createClass({
-	  displayName: "CurrencySelect",
-
-	  render: function render() {
-	    return React.createElement(
-	      "select",
-	      null,
-	      React.createElement(
-	        "option",
-	        null,
-	        "A"
-	      ),
-	      React.createElement(
-	        "option",
-	        null,
-	        "B"
-	      ),
-	      React.createElement(
-	        "option",
-	        null,
-	        "C"
-	      ),
-	      React.createElement(
-	        "option",
-	        null,
-	        "D"
-	      )
-	    );
-	  }
-	});
-
-	module.exports = CurrencySelect;
-
-/***/ },
-/* 14 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _CurrencySelect = __webpack_require__(13);
+	var _CurrencySelect = __webpack_require__(14);
 
 	var _CurrencySelect2 = _interopRequireDefault(_CurrencySelect);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var InputGroup = React.createClass({
-	  displayName: 'InputGroup',
+	  displayName: "InputGroup",
 
 	  getInitialState: function getInitialState() {
 	    return {
-	      input: ''
+	      input: this.props.value
 	    };
 	  },
 	  handleInputChange: function handleInputChange(e) {
 	    this.setState({
 	      input: e.target.value
 	    });
-	    this.props.setValue(e.target.value);
+	    if (this.props.setValue) {
+	      this.props.setValue(e.target.value);
+	    }
+	  },
+	  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+	    this.setState({
+	      input: nextProps.value
+	    });
+	  },
+	  setSelectCurrency: function setSelectCurrency(value) {
+	    this.props.setCurrency(value);
 	  },
 	  render: function render() {
 	    return React.createElement(
-	      'div',
-	      { className: 'row input-group col-md-6' },
+	      "div",
+	      { className: "row input-group col-md-6" },
 	      React.createElement(
-	        'label',
-	        { className: 'tab' },
+	        "label",
+	        { className: "tab" },
 	        this.props.title
 	      ),
-	      React.createElement(_CurrencySelect2.default, null),
-	      React.createElement('input', {
-	        type: 'text',
-	        placeholder: 'CNY',
+	      React.createElement(_CurrencySelect2.default, { setCurrency: this.setSelectCurrency }),
+	      React.createElement("input", {
+	        type: "text",
+	        placeholder: this.props.currency,
 	        value: this.state.input,
 	        onChange: this.handleInputChange,
-	        className: 'form-control col-md-1'
+	        className: "form-control col-md-1"
 	      })
 	    );
 	  }
 	});
 
 	module.exports = InputGroup;
+
+/***/ },
+/* 14 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	var currency = ['USD', 'HKD', 'CNY', 'JPY'];
+	var CurrencySelect = React.createClass({
+	  displayName: 'CurrencySelect',
+
+	  handleSelct: function handleSelct(e) {
+	    this.props.setCurrency(e.target.value);
+	  },
+	  render: function render() {
+	    var options = currency.map(function (item) {
+	      return React.createElement(
+	        'option',
+	        { key: item, value: item },
+	        item
+	      );
+	    });
+	    return React.createElement(
+	      'select',
+	      { onChange: this.handleSelct },
+	      options
+	    );
+	  }
+	});
+
+	module.exports = CurrencySelect;
 
 /***/ }
 /******/ ]);
