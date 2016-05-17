@@ -1,5 +1,6 @@
 import Converter from '../scripts/converter.js';
 import Checker from '../scripts/checker.js';
+import InputGroup from './InputGroup.js';
 
 let converter = '';
 let checker = '';
@@ -17,12 +18,12 @@ var CurrencyCoverter = React.createClass({
     checker = new Checker();
     this.getRateFromAPI();
   },
-  handleInputChange : function(e){
-    let value = e.target.value;
+  handleInputChange : function(value){
     this.setState({input: value});
     if(checker.checkValue(value)){
       let moneyAfterConvert = converter.convert(value,this.state.rate);
       this.setState({ output: moneyAfterConvert});
+      console.log('output',this.state.output);
     }else{
       console.log('wrong number');
     }
@@ -50,32 +51,15 @@ var CurrencyCoverter = React.createClass({
   render : function(){
     return (
       <div className="container">
-        <div className="row input-group col-md-6">
-          <label className="tab">From</label>
-          <span className="input-group-addon">￥</span>
-          <input
-            type = "text"
-            placeholder = "CNY"
-            value={this.state.input}
-            onChange={this.handleInputChange}
-            className ="form-control col-md-1"
-          />
-        </div>
-        <div className="row input-group  col-md-6">
-          <label className="tab">To</label>
-          <span className="input-group-addon">$</span>
-          <input
-            type = "text"
-            placeholder = "HKD"
-            value={this.state.output}
-            className ="form-control  col-md-1"
-          />
-        </div>
+        <InputGroup title='FROM' value={this.state.input} setValue={this.handleInputChange}/>
+        <InputGroup title='TO' value={this.state.output}/>
         <div className="input-group col-md-6 col-md-offset-2">
           <button
-          className="btn btn-primary btn-lg"
-          onClick = {this.handleButtonClick}
-          >Reset</button>
+            className="btn btn-primary btn-lg"
+            onClick = {this.handleButtonClick}
+          >
+          Reset
+          </button>
         </div>
       </div>
     )

@@ -413,9 +413,9 @@
 
 	var _Footer2 = _interopRequireDefault(_Footer);
 
-	var _CurrencyConverter = __webpack_require__(8);
+	var _ContentHolder = __webpack_require__(8);
 
-	var _CurrencyConverter2 = _interopRequireDefault(_CurrencyConverter);
+	var _ContentHolder2 = _interopRequireDefault(_ContentHolder);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -427,49 +427,7 @@
 	      'div',
 	      null,
 	      React.createElement(_Header2.default, null),
-	      React.createElement(
-	        'div',
-	        null,
-	        React.createElement(
-	          'section',
-	          null,
-	          React.createElement(
-	            'div',
-	            { className: 'container input-group ' },
-	            React.createElement(
-	              'div',
-	              { className: 'row ' },
-	              React.createElement(
-	                'div',
-	                { className: 'col-md-12' },
-	                React.createElement(
-	                  'h1',
-	                  { className: 'section-heading' },
-	                  'Simple Currency Converter'
-	                ),
-	                React.createElement(
-	                  'p',
-	                  { className: 'lead section-lead' },
-	                  'This is a very simple currency converter based on react js.'
-	                )
-	              )
-	            )
-	          ),
-	          React.createElement(
-	            'div',
-	            { className: 'container' },
-	            React.createElement(
-	              'div',
-	              { className: 'row' },
-	              React.createElement(
-	                'div',
-	                { className: 'col-md-12' },
-	                React.createElement(_CurrencyConverter2.default, null)
-	              )
-	            )
-	          )
-	        )
-	      ),
+	      React.createElement(_ContentHolder2.default, null),
 	      React.createElement(_Footer2.default, null)
 	    );
 	  }
@@ -597,15 +555,79 @@
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
+	"use strict";
+
+	var _CurrencyConverter = __webpack_require__(9);
+
+	var _CurrencyConverter2 = _interopRequireDefault(_CurrencyConverter);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var ContentHolder = React.createClass({
+	  displayName: "ContentHolder",
+
+	  render: function render() {
+	    return React.createElement(
+	      "section",
+	      null,
+	      React.createElement(
+	        "div",
+	        { className: "container input-group " },
+	        React.createElement(
+	          "div",
+	          { className: "row" },
+	          React.createElement(
+	            "div",
+	            { className: "col-md-12" },
+	            React.createElement(
+	              "h1",
+	              { className: "section-heading" },
+	              "Simple Currency Converter"
+	            ),
+	            React.createElement(
+	              "p",
+	              { className: "lead section-lead" },
+	              "This is a very simple currency converter based on react js."
+	            )
+	          )
+	        )
+	      ),
+	      React.createElement(
+	        "div",
+	        { className: "container" },
+	        React.createElement(
+	          "div",
+	          { className: "row" },
+	          React.createElement(
+	            "div",
+	            { className: "col-md-12" },
+	            React.createElement(_CurrencyConverter2.default, null)
+	          )
+	        )
+	      )
+	    );
+	  }
+	});
+
+	module.exports = ContentHolder;
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
 	'use strict';
 
-	var _converter = __webpack_require__(9);
+	var _converter = __webpack_require__(10);
 
 	var _converter2 = _interopRequireDefault(_converter);
 
-	var _checker = __webpack_require__(11);
+	var _checker = __webpack_require__(12);
 
 	var _checker2 = _interopRequireDefault(_checker);
+
+	var _InputGroup = __webpack_require__(14);
+
+	var _InputGroup2 = _interopRequireDefault(_InputGroup);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -627,12 +649,12 @@
 	    checker = new _checker2.default();
 	    this.getRateFromAPI();
 	  },
-	  handleInputChange: function handleInputChange(e) {
-	    var value = e.target.value;
+	  handleInputChange: function handleInputChange(value) {
 	    this.setState({ input: value });
 	    if (checker.checkValue(value)) {
 	      var moneyAfterConvert = converter.convert(value, this.state.rate);
 	      this.setState({ output: moneyAfterConvert });
+	      console.log('output', this.state.output);
 	    } else {
 	      console.log('wrong number');
 	    }
@@ -662,47 +684,8 @@
 	    return React.createElement(
 	      'div',
 	      { className: 'container' },
-	      React.createElement(
-	        'div',
-	        { className: 'row input-group col-md-6' },
-	        React.createElement(
-	          'label',
-	          { className: 'tab' },
-	          'From'
-	        ),
-	        React.createElement(
-	          'span',
-	          { className: 'input-group-addon' },
-	          '￥'
-	        ),
-	        React.createElement('input', {
-	          type: 'text',
-	          placeholder: 'CNY',
-	          value: this.state.input,
-	          onChange: this.handleInputChange,
-	          className: 'form-control col-md-1'
-	        })
-	      ),
-	      React.createElement(
-	        'div',
-	        { className: 'row input-group  col-md-6' },
-	        React.createElement(
-	          'label',
-	          { className: 'tab' },
-	          'To'
-	        ),
-	        React.createElement(
-	          'span',
-	          { className: 'input-group-addon' },
-	          '$'
-	        ),
-	        React.createElement('input', {
-	          type: 'text',
-	          placeholder: 'HKD',
-	          value: this.state.output,
-	          className: 'form-control  col-md-1'
-	        })
-	      ),
+	      React.createElement(_InputGroup2.default, { title: 'FROM', value: this.state.input, setValue: this.handleInputChange }),
+	      React.createElement(_InputGroup2.default, { title: 'TO', value: this.state.output }),
 	      React.createElement(
 	        'div',
 	        { className: 'input-group col-md-6 col-md-offset-2' },
@@ -722,14 +705,14 @@
 	module.exports = CurrencyCoverter;
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _react = __webpack_require__(10);
+	var _react = __webpack_require__(11);
 
 	var _react2 = _interopRequireDefault(_react);
 
@@ -766,20 +749,20 @@
 	module.exports = Converter;
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports) {
 
 	module.exports = React;
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _react = __webpack_require__(10);
+	var _react = __webpack_require__(11);
 
 	var _react2 = _interopRequireDefault(_react);
 
@@ -840,6 +823,94 @@
 	}(_react.Component);
 
 	module.exports = Checker;
+
+/***/ },
+/* 13 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	var CurrencySelect = React.createClass({
+	  displayName: "CurrencySelect",
+
+	  render: function render() {
+	    return React.createElement(
+	      "select",
+	      null,
+	      React.createElement(
+	        "option",
+	        null,
+	        "A"
+	      ),
+	      React.createElement(
+	        "option",
+	        null,
+	        "B"
+	      ),
+	      React.createElement(
+	        "option",
+	        null,
+	        "C"
+	      ),
+	      React.createElement(
+	        "option",
+	        null,
+	        "D"
+	      )
+	    );
+	  }
+	});
+
+	module.exports = CurrencySelect;
+
+/***/ },
+/* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _CurrencySelect = __webpack_require__(13);
+
+	var _CurrencySelect2 = _interopRequireDefault(_CurrencySelect);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var InputGroup = React.createClass({
+	  displayName: 'InputGroup',
+
+	  getInitialState: function getInitialState() {
+	    return {
+	      input: ''
+	    };
+	  },
+	  handleInputChange: function handleInputChange(e) {
+	    this.setState({
+	      input: e.target.value
+	    });
+	    this.props.setValue(e.target.value);
+	  },
+	  render: function render() {
+	    return React.createElement(
+	      'div',
+	      { className: 'row input-group col-md-6' },
+	      React.createElement(
+	        'label',
+	        { className: 'tab' },
+	        this.props.title
+	      ),
+	      React.createElement(_CurrencySelect2.default, null),
+	      React.createElement('input', {
+	        type: 'text',
+	        placeholder: 'CNY',
+	        value: this.state.input,
+	        onChange: this.handleInputChange,
+	        className: 'form-control col-md-1'
+	      })
+	    );
+	  }
+	});
+
+	module.exports = InputGroup;
 
 /***/ }
 /******/ ]);
